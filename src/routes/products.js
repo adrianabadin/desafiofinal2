@@ -1,11 +1,12 @@
 const express=require('express')
 const router =express.Router()
 const productController =require('../controllers/products.controllers')
-
+const ValidatorWare =require('../services/validation').ValidatorWare
+const authValidation=require("../services/validation").authValidation
 router.get('/', productController.getItems)
 router.get('/:id', productController.getItems)
-const validationWare = new ValidatorWare.ValidatorWare('router')
-const authVerification = ValidatorWare.authValidation(false)
+const validationWare = new ValidatorWare('PRODUCTS')
+const authVerification = authValidation(true)
 router.post(
   '/',
   authVerification.authVal,

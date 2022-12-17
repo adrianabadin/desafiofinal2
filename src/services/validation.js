@@ -1,5 +1,4 @@
-import { Item, ValidationObject, SelectionObject } from '../types'
-import { Response, NextFunction, Request } from 'express'
+const colors=require("colors")
 class ValidatorWare {
  SelectionObject
  ValidationObject = {
@@ -7,7 +6,7 @@ class ValidatorWare {
     description: /[a-zA-Z0-9]{3,}/g,
     price: /[0-9]/,
     stock: /[0-9]/,
-    code: /[0-9A-Z]/
+    code: /[0-9A-Za-z]/
   }
 
   constructor (selectedObject) {
@@ -15,12 +14,17 @@ class ValidatorWare {
   }
 
   validation = (req, res, next) => {
-    let data
-    if (this.selectedObject !== 'PRODUCTS') {
-      data = req.body.products
-    } else data = req.body 
-    const validationObject = this.PRODUCTS
-    if (req.body === null) next()
+    let validationObject
+    const data =req.body
+    if (req.body===undefined)       res.status(400).send({
+      data: [],
+      ok: false,
+      err: 'Data doesnt validate',
+      status: 400,
+      textStatus: 'Data doesnt validate'
+    })
+    if (this.selectedObject==="PRODUCTS") validationObject =this.ValidationObject
+    else next()
     const dataKeys = Object.keys(data)
     const validationKeys = Object.keys(validationObject)
     const result = []
@@ -29,9 +33,9 @@ class ValidatorWare {
         const expression = new RegExp(
           validationObject[item]
         )
-        if (expression.test(data[item].toString())) {
-          result.push(true)
-        } else result.push(false)
+        console.log(colors.red(item))
+        result.push(expression.test(data[item].toString()))
+
       } else result.push(true)
     })
     console.log(result)

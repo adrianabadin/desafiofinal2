@@ -6,14 +6,14 @@ const productDbManager = new Product('./databases/product')
 function productControllers () {
   const postItem = async (req, res) => {
     const item = req.body
-    const uploadedImage = `./images/${req.file?.filename.toString()}`
+    console.log(item)
     const data = await productDbManager.addItem(
       new ItemClass(
         0,
         item.name,
         item.description,
         item.code,
-        uploadedImage,
+        item.image,
         item.price,
         item.stock
       )
@@ -29,7 +29,7 @@ function productControllers () {
       data = await productDbManager.getAll()
     }
 
-    res.status(responseAnalizer(data).status).send(responseAnalizer(data).data)
+    res.status(responseAnalizer(data).status).send(responseAnalizer(data))
   }
   const updateItem = async (req, res) => {
     const uploadedImage = `./images/${req.file?.filename}`
@@ -39,7 +39,7 @@ function productControllers () {
         req.body.name,
         req.body.description,
         req.body.code,
-        uploadedImage,
+        req.body.image,
         req.body.price,
         req.body.stock
       ), parseInt(req.params.id)
