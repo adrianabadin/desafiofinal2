@@ -1,12 +1,11 @@
 // import { Color } from "colors";
 
-const fs =require('fs')
+const fs = require('fs')
 const TIMEOUT = 3000
 
 class ItemClass {
-
   constructor (
-    id, 
+    id,
     name,
     description,
     code,
@@ -26,7 +25,6 @@ class ItemClass {
 }
 
 class CartClass {
-
   constructor (id, timeStamp, cartProducts) {
     this.id = id
     this.timeStamp = timeStamp
@@ -34,15 +32,13 @@ class CartClass {
   }
 }
 class VersionClass {
- 
   constructor (timeStamp, blocked, blockStart) {
     this.timeStamp = timeStamp
     this.blocked = blocked
     this.blockStart = blockStart
   }
 }
- class JsonDbManager {
-
+class JsonDbManager {
   constructor (file) {
     this.file = file
     this.data = []
@@ -51,7 +47,6 @@ class VersionClass {
 
   async loadVersion () {
     let version
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (fs.existsSync(`${this.file}.version`)) {
       version = await JSON.parse(
         await fs.promises.readFile(`${this.file}.version`, 'utf-8')
@@ -79,7 +74,7 @@ class VersionClass {
   async updateVersion (block) {
     if (block) this.version = new VersionClass(Date.now(), true, Date.now())
     else this.version = new VersionClass(Date.now(), false, 0)
-    void fs.promises.writeFile(
+    fs.promises.writeFile(
       `${this.file}.version`,
       JSON.stringify(this.version),
       'utf-8'
@@ -91,7 +86,6 @@ class VersionClass {
       // eslint-disable-next-line no-extra-boolean-cast
       if (Boolean(fs.existsSync(`${this.file}.JSONE`))) {
         this.data = await JSON.parse(
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           `[${await fs.promises.readFile(`${this.file}.JSONE`, 'utf-8')}]`
         )
       } else {
@@ -99,8 +93,8 @@ class VersionClass {
           1,
           this.data.length - 1
         )
-        void fs.promises.writeFile(`${this.file}.JSONE`, jsonMod, 'utf-8')
-        void this.updateVersion(false)
+        fs.promises.writeFile(`${this.file}.JSONE`, jsonMod, 'utf-8')
+        this.updateVersion(false)
       }
     }
     return this.data
@@ -109,7 +103,6 @@ class VersionClass {
   async saveFile () {
     while ((await this.loadVersion()).blocked) {
       console.log('DataStorage blocked')
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       setTimeout(async () => await this.updateVersion(false), TIMEOUT)
     }
     await this.updateVersion(true)
@@ -127,21 +120,20 @@ class VersionClass {
   }
 
   async appendItem (item) {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => await this.updateVersion(false), TIMEOUT)
     while ((await this.loadVersion()).blocked) {
       console.log('DataStorage blocked')
     }
     await this.updateVersion(true)
     try {
-      void fs.promises.appendFile(`${this.file}.JSONE`, item)
+      fs.promises.appendFile(`${this.file}.JSONE`, item)
     } catch (err) {
       console.log(err)
     }
     await this.updateVersion(false)
   }
 
-  async addItem (item){
+  async addItem (item) {
     await this.readData()
     let response
     const itemUpdated = { ...item, id: this.largestId() }
@@ -169,7 +161,7 @@ class VersionClass {
     return response
   }
 
-  async getById (id){
+  async getById (id) {
     await this.readData()
     const response = await this.data.filter((item) => item.id === id)
     return response.length === 0
@@ -189,7 +181,7 @@ class VersionClass {
         }
   }
 
-  async getAll (){
+  async getAll () {
     await this.readData()
     return this.data.length > 0
       ? {
@@ -208,7 +200,7 @@ class VersionClass {
         }
   }
 
-  async deleteById (id){
+  async deleteById (id) {
     await this.readData()
     const item = this.data.find((dataItem) => dataItem.id === id)
     if (item != null) {
@@ -232,7 +224,7 @@ class VersionClass {
     }
   }
 
-  async updateById (item, id){
+  async updateById (item, id) {
     await this.readData()
     const dataIndex = this.data.findIndex((dataItem) => dataItem.id === id)
     if (dataIndex !== -1) {

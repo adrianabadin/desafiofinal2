@@ -1,7 +1,7 @@
-const colors=require("colors")
+const colors = require('colors')
 class ValidatorWare {
- SelectionObject
- ValidationObject = {
+  SelectionObject
+  ValidationObject = {
     name: /[a-zA-Z0-9]{3,}/g,
     description: /[a-zA-Z0-9]{3,}/g,
     price: /[0-9]/,
@@ -15,15 +15,17 @@ class ValidatorWare {
 
   validation = (req, res, next) => {
     let validationObject
-    const data =req.body
-    if (req.body===undefined)       res.status(400).send({
-      data: [],
-      ok: false,
-      err: 'Data doesnt validate',
-      status: 400,
-      textStatus: 'Data doesnt validate'
-    })
-    if (this.selectedObject==="PRODUCTS") validationObject =this.ValidationObject
+    const data = req.body
+    if (req.body === undefined) {
+      res.status(400).send({
+        data: [],
+        ok: false,
+        err: 'Data doesnt validate',
+        status: 400,
+        textStatus: 'Data doesnt validate'
+      })
+    }
+    if (this.selectedObject === 'PRODUCTS') validationObject = this.ValidationObject
     else next()
     const dataKeys = Object.keys(data)
     const validationKeys = Object.keys(validationObject)
@@ -35,7 +37,6 @@ class ValidatorWare {
         )
         console.log(colors.red(item))
         result.push(expression.test(data[item].toString()))
-
       } else result.push(true)
     })
     console.log(result)

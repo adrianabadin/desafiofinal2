@@ -1,7 +1,7 @@
 
 const ItemClass = require('../services/dbService').ItemClass
 const Product = require('../services/dbService').JsonDbManager
-const productDbManager = new Product('./databases/product')
+const productDbManager = new Product('./src/databases/product')
 
 function productControllers () {
   const postItem = async (req, res) => {
@@ -32,7 +32,7 @@ function productControllers () {
     res.status(responseAnalizer(data).status).send(responseAnalizer(data))
   }
   const updateItem = async (req, res) => {
-    const uploadedImage = `./images/${req.file?.filename}`
+    // const uploadedImage = `./images/${req.file?.filename}`
     const data = await productDbManager.updateById(
       new ItemClass(
         parseInt(req.params.id),
