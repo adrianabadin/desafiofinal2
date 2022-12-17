@@ -11,12 +11,12 @@ class ValidatorWare {
   }
 
   constructor (selectedObject) {
-    this.selectedOnject = selectedObject
+    this.selectedObject = selectedObject
   }
 
   validation = (req, res, next) => {
     let data
-    if (this.selectedOnject !== 'PRODUCTS') {
+    if (this.selectedObject !== 'PRODUCTS') {
       data = req.body.products
     } else data = req.body 
     const validationObject = this.PRODUCTS

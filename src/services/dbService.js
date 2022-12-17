@@ -3,7 +3,7 @@
 const fs =require('fs')
 const TIMEOUT = 3000
 
-export class ItemClass {
+class ItemClass {
 
   constructor (
     id, 
@@ -25,7 +25,7 @@ export class ItemClass {
   }
 }
 
-export class CartClass {
+class CartClass {
 
   constructor (id, timeStamp, cartProducts) {
     this.id = id
@@ -41,7 +41,7 @@ class VersionClass {
     this.blockStart = blockStart
   }
 }
-export class JsonDbManager {
+ class JsonDbManager {
 
   constructor (file) {
     this.file = file
