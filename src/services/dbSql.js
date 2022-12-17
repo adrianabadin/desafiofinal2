@@ -1,4 +1,4 @@
-const Database = require('../config/knex.js')
+// const Database = require('../config/knex.js')
 // const colors = require('colors')
 class Products {
   constructor (name, description, code, image, price, stock) {
@@ -18,9 +18,7 @@ class DatabaseHandlder {
   }
 
   async isTable () {
-    try {
-      return await this.database.schema.hasTable(this.products)
-    } catch (e) { console.error(e) }
+    return this.database.schema.hasTable(this.products).then(() => true).catch(() => false)
   }
 
   async createTable (tableObject) {
@@ -30,13 +28,12 @@ class DatabaseHandlder {
       for (const field of keys) {
         table[tableObject[field]](field)
       }
-    }).then(res => console.log(res)).catch(err => console.log(err))
-    // return { status: 201, ok: true, statusText: 'Table created successfully' }
-    // return { status: 400, ok: false, statusText: 'Failed to create Table' } }
+    }).then(res => { return { status: 201, ok: true, statusText: 'Table created successfully' } }).catch(err => { return { status: 400, ok: false, statusText: 'Failed to create Table', err } })
   }
 
   async addItem (item) {
-    if (this.isTable() !== true) {
+    const condicion = await this.isTable()
+    if (!condicion) {
       console.log('creatinG table')
       await this.createTable(this.products)
     }
@@ -62,12 +59,13 @@ class DatabaseHandlder {
   }
 
   async getByID (id) {
-    if (!this.isTable()) {
+    const condicion = await this.isTable()
+    if (!condicion) {
       await this.createTable(this.products)
     }
     return this.database(this.table).where({ id }).then(response => {
       return {
-        data: [JSON.parse(JSON.stringify(response))],
+        data: JSON.parse(JSON.stringify(response)),
         ok: true,
         err: '',
         status: 200,
@@ -85,11 +83,11 @@ class DatabaseHandlder {
   }
 
   async getAll () {
-    if (!this.isTable()) {
+    const condicion = await this.isTable()
+    if (!condicion) {
       await this.createTable(this.products)
     }
     return this.database.select('*').from(this.table).then(response => {
-      console.log(response)
       return {
         data: JSON.parse(JSON.stringify(response)),
         ok: true,
@@ -109,32 +107,60 @@ class DatabaseHandlder {
   }
 
   async updateById (item, id) {
-    if (!this.isTable()) {
+    const condicion = await this.isTable()
+    if (!condicion) {
       await this.createTable(this.products)
     }
-    try {
-      this.database(this.table).where({ id }).update(JSON.stringify(item))
+
+    this.database(this.table).where({ id }).update(item).then(res => {
       return {
-        data: [item],
+        data: JSON.parse(JSON.stringify(item)),
         ok: true,
         err: '',
         status: 200,
         textStatus: 'Item updated successfully'
       }
-    } catch (err) {
+    }).catch(err => {
+      console.error(err)
       return {
         data: [],
         ok: false,
         err,
         status: 400,
         textStatus: 'Unable to update item in the DB'
-
       }
+    })
+  }
+
+  async deleteById (id) {
+    const condicion = await this.isTable()
+    if (!condicion) {
+      await this.createTable(this.products)
     }
+    return this.database(this.table).where({ id }).delete().then(res => {
+      return {
+        data: [],
+        ok: true,
+        err: '',
+        status: 200,
+        textStatus: 'Item deleted successfully'
+      }
+    }).catch(err => {
+      return {
+        data: [],
+        ok: false,
+        err,
+        status: 400,
+        textStatus: 'Unable to update item in the DB'
+      }
+    })
   }
 }
 
-const db = new Database('products', 'sqlite')
-const dbMan = new DatabaseHandlder(db, 'products')
+// const db = new Database('products', 'sqlite')
+// const dbMan = new DatabaseHandlder(db, 'products')
 // dbMan.getAll().then(res => console.log(res))
-dbMan.addItem(new Products('ada', 'dada', 'nnn', 'nnn', 12, 16)).then(res => console.log(res))
+// dbMan.addItem(new Products('ada', 'dada', 'nnn', 'nnn', 12, 16)).then(res => console.log(res))
+// dbMan.updateById(new Products('Adrian', 'daniel', 'abadin', 'fffrr', 12, 44), 2).then(res => console.log(res))
+// dbMan.getByID(2).then(res => console.log(res))
+module.exports = DatabaseHandlder

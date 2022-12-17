@@ -12,7 +12,6 @@ class DatabaseSql {
           }
         }
         )
-        console.log('mysql')
         break
       case 'sqlite':
         this.database = require('knex')({
@@ -20,7 +19,6 @@ class DatabaseSql {
           connection: { filename: `./src/databases/${file}.sqlite3` },
           useNullAsDefault: true
         })
-        console.log('sqlite')
         break
     }
   }
