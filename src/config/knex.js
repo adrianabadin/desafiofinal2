@@ -1,10 +1,8 @@
-const knex = require('knex')
-
 class DatabaseSql {
   constructor (file, db) {
     switch (db) {
       case 'mysql':
-        this.database = knex({
+        this.database = require('knex')({
           client: 'mysql',
           connection: {
             host: 'localhost',
@@ -14,12 +12,15 @@ class DatabaseSql {
           }
         }
         )
+        console.log('mysql')
         break
       case 'sqlite':
-        this.database = knex({
+        this.database = require('knex')({
           client: 'sqlite3',
-          connection: { filename: `./src/database/${file}` }
+          connection: { filename: `./src/databases/${file}.sqlite3` },
+          useNullAsDefault: true
         })
+        console.log('sqlite')
         break
     }
   }

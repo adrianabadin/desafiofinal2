@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/app.js"
+    "start": "nodemon ./src/app.js",
+    "try":"nodemon ./src/services/dbSql.js",
+    "try2":"node ./src/config/knex.js"
   },
   "keywords": [],
   "author": "",
