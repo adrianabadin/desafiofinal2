@@ -1,4 +1,5 @@
 // const Database = require('../config/knex.js')
+
 // const colors = require('colors')
 class Products {
   constructor (name, description, code, image, price, stock) {
@@ -138,6 +139,7 @@ class DatabaseHandlder {
       await this.createTable(this.products)
     }
     return this.database(this.table).where({ id }).delete().then(res => {
+      if (JSON.parse(JSON.stringify(res)) === 0) throw new Error('Cannot delete')
       return {
         data: [],
         ok: true,
@@ -159,8 +161,10 @@ class DatabaseHandlder {
 
 // const db = new Database('products', 'sqlite')
 // const dbMan = new DatabaseHandlder(db, 'products')
+
 // dbMan.getAll().then(res => console.log(res))
 // dbMan.addItem(new Products('ada', 'dada', 'nnn', 'nnn', 12, 16)).then(res => console.log(res))
 // dbMan.updateById(new Products('Adrian', 'daniel', 'abadin', 'fffrr', 12, 44), 2).then(res => console.log(res))
 // dbMan.getByID(2).then(res => console.log(res))
+// dbMan.deleteById(4).then(res => console.log(res))
 module.exports = DatabaseHandlder
