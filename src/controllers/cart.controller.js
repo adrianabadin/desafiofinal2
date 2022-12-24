@@ -1,27 +1,32 @@
-
-const ItemClass = require('../services/dbService').ItemClass
-const Product = require('../services/dbService').JsonDbManager
-const cartDbManager = new Product('./src/databases/cart')
-
+const colors = require('colors')
+const ItemClass = require('../services/jsonDAO').ItemClass
+const uuid = require('uuid')
+// const Product = require('../services/jsonDAO').JsonDbManager
+// const cartDbManager = new Product('./src/databases/cart')
+const MongoDAO = require('../services/mongoDbDAO')
+const model = require('../databases/models/cartModels')
+const cartDbManager = new MongoDAO(model)
+// const CartDbManager = require('../services/firestoreDAO')
+// const cartDbManager = new CartDbManager('carts')
 function CartControllers () {
   const createCart = async (req, res) => {
     try {
-      await cartDbManager.addItem({ id: 0, timeStamp: Date.now(), products: [] })
-      res.status(201).send('Resource succesifuly created')
+      const response = await cartDbManager.addItem({ id: 0, timeStamp: Date.now(), products: [] })
+      res.status(201).send(response)
     } catch (err) { res.status(400).send('Didnt Create Resource (Cart)') }
   }
 
   const addProduct = async (req, res) => {
     console.log('addproduct', req.body)
     try {
-      const data = req.body
-      const id = parseInt(req.params.id)
+      const data = { ...req.body, id: uuid.v4() }
+      const id = req.params.id
       const transitionObject = await cartDbManager.getById(id)
       const cleanObject = transitionObject.data
-      console.log(transitionObject, id, 'DATA:', data)
-      cleanObject[0].products.push(new ItemClass(data.id, data.name, data.description, data.code, data.image, data.price, data.stock))
-      console.log(cleanObject[0])
-      const response = await cartDbManager.updateById(cleanObject[0], parseInt(req.params.id))
+      console.log(transitionObject, id, 'DATA:', data, colors.red(cleanObject))
+      cleanObject.products.push(new ItemClass(data.id, data.name, data.description, data.code, data.image, data.price, data.stock))
+      console.log(colors.red(cleanObject), 'CleanObj')
+      const response = await cartDbManager.updateById(cleanObject, req.params.id)
       res.status(response.status).send(response.data)
     } catch (e) { res.status(400).send({ err: 'Unable to add item to the cart ' }) }
   }
@@ -31,18 +36,23 @@ function CartControllers () {
     res.status(data.status).send(data.data)
   }
   const deleteCart = async (req, res) => {
-    const id = parseInt(req.params.id)
-    console.log(id)
-    const data = await cartDbManager.deleteById(id)
-    console.log(data)
-    res.status(data.status).send(data.data)
+    const id = req.params.id
+    let data
+    const doc = await cartDbManager.getById(id)
+    if (doc.ok) {
+      data = await cartDbManager.deleteById(id)
+    } else data = { status: 400, err: 'Cart doesnt exist' }
+    res.status(data.status).send(data.err)
   }
   const deleteProduct = async (req, res) => {
     const { id, idProd } = req.params
-    const { data } = await cartDbManager.getById(parseInt(id))
-    const index = data[0].products.findIndex((product) => { return product.id === parseInt(idProd) })
-    data[0].products.splice(index, 1)
-    const response = await cartDbManager.updateById(data[0], parseInt(id))
+    let response
+    const { data, ok } = await cartDbManager.getById(id)
+    if (ok) {
+      const index = data.products.findIndex((product) => { return product.id === idProd })
+      data.products.splice(index, 1)
+      response = await cartDbManager.updateById(data, id)
+    } else response = { status: 400, data: 'The cart doesnt exist' }
     res.status(response.status).send(response.data)
   }
   return { createCart, addProduct, getCart, deleteCart, deleteProduct }

@@ -161,7 +161,8 @@ class JsonDbManager {
     return response
   }
 
-  async getById (id) {
+  async getById (id1) {
+    const id = parseInt(id1)
     await this.readData()
     const response = await this.data.filter((item) => item.id === id)
     return response.length === 0
@@ -173,7 +174,7 @@ class JsonDbManager {
           ok: false
         }
       : {
-          data: response,
+          data: response[0],
           textStatus: 'Element found',
           err: ' ',
           status: 200,
@@ -200,7 +201,9 @@ class JsonDbManager {
         }
   }
 
-  async deleteById (id) {
+  async deleteById (id1) {
+    const id = parseInt(id1)
+    console.log('Deletingid :', id)
     await this.readData()
     const item = this.data.find((dataItem) => dataItem.id === id)
     if (item != null) {
@@ -224,7 +227,9 @@ class JsonDbManager {
     }
   }
 
-  async updateById (item, id) {
+  async updateById (item, id1) {
+    const id = parseInt(id1)
+
     await this.readData()
     const dataIndex = this.data.findIndex((dataItem) => dataItem.id === id)
     if (dataIndex !== -1) {

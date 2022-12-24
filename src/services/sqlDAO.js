@@ -59,7 +59,9 @@ class DatabaseHandlder {
     }
   }
 
-  async getByID (id) {
+  async getByID (id1) {
+    const id = parseInt(id1)
+
     const condicion = await this.isTable()
     if (!condicion) {
       await this.createTable(this.products)
@@ -107,7 +109,9 @@ class DatabaseHandlder {
     })
   }
 
-  async updateById (item, id) {
+  async updateById (item, id1) {
+    const id = parseInt(id1)
+
     const condicion = await this.isTable()
     if (!condicion) {
       await this.createTable(this.products)
@@ -133,7 +137,9 @@ class DatabaseHandlder {
     })
   }
 
-  async deleteById (id) {
+  async deleteById (id1) {
+    const id = parseInt(id1)
+
     const condicion = await this.isTable()
     if (!condicion) {
       await this.createTable(this.products)
@@ -158,13 +164,4 @@ class DatabaseHandlder {
     })
   }
 }
-
-// const db = new Database('products', 'sqlite')
-// const dbMan = new DatabaseHandlder(db, 'products')
-
-// dbMan.getAll().then(res => console.log(res))
-// dbMan.addItem(new Products('ada', 'dada', 'nnn', 'nnn', 12, 16)).then(res => console.log(res))
-// dbMan.updateById(new Products('Adrian', 'daniel', 'abadin', 'fffrr', 12, 44), 2).then(res => console.log(res))
-// dbMan.getByID(2).then(res => console.log(res))
-// dbMan.deleteById(4).then(res => console.log(res))
 module.exports = DatabaseHandlder
