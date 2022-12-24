@@ -12,14 +12,16 @@ class Products {
   }
 }
 class DatabaseHandlder {
-  constructor (database, table) {
-    this.database = database.database
+  constructor (file, database, table) {
+    this.database = new (require('../config/knex.js'))(file, database).database
     this.table = table
     this.products = new Products('string', 'string', 'string', 'string', 'integer', 'integer')
   }
 
   async isTable () {
-    return this.database.schema.hasTable(this.products).then(() => true).catch(() => false)
+    const rta = await this.database.schema.hasTable(this.products).then(() => true).catch(() => false)
+    console.log(rta)
+    return rta
   }
 
   async createTable (tableObject) {
@@ -39,8 +41,10 @@ class DatabaseHandlder {
       await this.createTable(this.products)
     }
     try {
-      await this.database(this.table).insert(item)
-      console.log(this.table)
+      console.log(item)
+
+      const dato = await this.database(this.table).insert(item)
+      console.log(this.table, dato)
       return {
         data: [item],
         ok: true,
