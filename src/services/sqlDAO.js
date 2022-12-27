@@ -1,26 +1,34 @@
 // const Database = require('../config/knex.js')
 
 const colors = require('colors')
-class Products {
-  constructor (name, description, code, image, price, stock) {
-    this.name = name
-    this.description = description
-    this.code = code
-    this.image = image
-    this.price = price
-    this.stock = stock
-  }
-}
+// class Products {
+//   constructor (name, description, code, image, price, stock, timeStamp) {
+//     this.name = name
+//     this.description = description
+//     this.code = code
+//     this.image = image
+//     this.price = price
+//     this.stock = stock
+//     this.timeStamp = timeStamp
+//   }
+// }
 class DatabaseHandlder {
   constructor (file, database, table) {
     this.database = new (require('../config/knex.js'))(file, database).database
     this.table = table
-    this.products = new Products('string', 'string', 'string', 'string', 'integer', 'integer')
+    this.products = { name: 'string', description: 'string', code: 'string', image: 'string', price: 'integer', stock: 'integer', timeStamp: 'integer' }
+    // new Products('string', 'string', 'string', 'string', 'integer', 'integer', 'integer')
   }
 
   async isTable () {
-    const rta = await this.database.schema.hasTable(this.products).then(() => true).catch(() => false)
-    console.log(rta)
+    const rta = await this.database.schema.hasTable(this.table).then((response) => {
+      console.log(response)
+      return response
+    }).catch((response) => {
+      console.log(response)
+      return response
+    })
+    console.log(colors.bgRed.bold.white(rta), 'existe la tabla products?')
     return rta
   }
 
@@ -28,13 +36,20 @@ class DatabaseHandlder {
     return this.database.schema.createTable(this.table, function (table) {
       const keys = Object.keys(tableObject)
       table.increments('id')
-      for (const field of keys) {
-        table[tableObject[field]](field)
-      }
-    }).then(res => { return { status: 201, ok: true, statusText: 'Table created successfully' } }).catch(err => { return { status: 400, ok: false, statusText: 'Failed to create Table', err } })
+      keys.forEach((key) => {
+        table[tableObject[key]](key)
+      })
+    }).then(res => {
+      console.log(res)
+      return { status: 201, ok: true, statusText: 'Table created successfully' }
+    }).catch(err => {
+      console.log(err)
+      return { status: 400, ok: false, statusText: 'Failed to create Table', err }
+    })
   }
 
-  async addItem (item) {
+  async addItem (item1) {
+    const item = { ...item1, id: undefined }
     const condicion = await this.isTable()
     if (!condicion) {
       console.log('creatinG table')
@@ -43,7 +58,7 @@ class DatabaseHandlder {
     try {
       console.log(colors.yellow(item))
 
-      const dato = await this.database(this.table).insert(item).then(res=>console.log(res)).catch(err=>console.log(err))
+      const dato = await this.database(this.table).insert(item).then(res => console.log(res)).catch(err => console.log(err))
 
       console.log(this.table, dato)
       return {
