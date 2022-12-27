@@ -1,6 +1,6 @@
 // const Database = require('../config/knex.js')
 
-// const colors = require('colors')
+const colors = require('colors')
 class Products {
   constructor (name, description, code, image, price, stock) {
     this.name = name
@@ -41,9 +41,10 @@ class DatabaseHandlder {
       await this.createTable(this.products)
     }
     try {
-      console.log(item)
+      console.log(colors.yellow(item))
 
-      const dato = await this.database(this.table).insert(item)
+      const dato = await this.database(this.table).insert(item).then(res=>console.log(res)).catch(err=>console.log(err))
+
       console.log(this.table, dato)
       return {
         data: [item],

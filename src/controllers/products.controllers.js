@@ -33,7 +33,7 @@ function productControllers () {
     let data
     console.log(req.params.id, 'params')
     if (req.params.id !== undefined) {
-      data = await productDbManager.getById(req.params.id)
+      data = await productDbManager.getByID(req.params.id)
     } else {
       data = await productDbManager.getAll()
     }
