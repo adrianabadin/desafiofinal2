@@ -52,7 +52,6 @@ function productControllers () {
         req.body.stock
       ), req.params.id
     )
-
     res.status(data.status).send(data)
   }
   const deleteItem = async (req, res) => {

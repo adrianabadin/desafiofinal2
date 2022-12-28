@@ -3,13 +3,15 @@ const ItemClass = require('../services/jsonDAO').ItemClass
 const uuid = require('uuid')
 // const Product = require('../services/jsonDAO').JsonDbManager
 // const cartDbManager = new Product('./src/databases/cart')
-const MongoDAO = require('../services/mongoDbDAO')
-const model = require('../databases/models/cartModels')
-const cartDbManager = new MongoDAO(model)
+// const MongoDAO = require('../services/mongoDbDAO')
+// const model = require('../databases/models/cartModels')
+// const cartDbManager = new MongoDAO(model)
 // const CartDbManager = require('../services/firestoreDAO')
 // const cartDbManager = new CartDbManager('carts')
+const CartDbManager = require('../services/sqlDAO')
+const cartDbManager = new CartDbManager('carts', 'sqlite', 'carts')
 function CartControllers () {
-  const createCart = async (req, res) => {
+  const createCart = async (_req, res) => {
     try {
       const response = await cartDbManager.addItem({ id: 0, timeStamp: Date.now(), products: [] })
       res.status(201).send(response)
@@ -32,7 +34,8 @@ function CartControllers () {
   }
   const getCart = async (req, res) => {
     const id = parseInt(req.params.id)
-    const data = await cartDbManager.getById(id)
+    console.log(await cartDbManager.getAll())
+    const data = await cartDbManager.getByID(id)
     res.status(data.status).send(data)
   }
   const deleteCart = async (req, res) => {

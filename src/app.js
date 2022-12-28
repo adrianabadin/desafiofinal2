@@ -13,5 +13,5 @@ app.use('/', products)
 app.use('/cart/', cart)
 // eslint-disable-next-line no-unused-vars
 const server = app.listen(PORT, () => {
-  console.log(colors.bgBlue.grey(`Server online on port ${PORT}`))
+  console.log(colors.bgBlue.white.bold(`Server online on port ${PORT}`))
 })
