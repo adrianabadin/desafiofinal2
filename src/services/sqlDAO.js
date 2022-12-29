@@ -80,7 +80,7 @@ class DatabaseHandlder {
     }
   }
 
-  async getByID (id1) {
+  async getById (id1) {
     const id = parseInt(id1)
 
     const condicion = await this.isTable()
@@ -141,6 +141,7 @@ class DatabaseHandlder {
     if (!condicion) {
       await this.createTable(this.products)
     }
+
     return await this.database(this.table).where({ id }).update(item).then(res => {
       console.log(res)
       if (res !== 0) {

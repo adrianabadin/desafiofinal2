@@ -11,6 +11,10 @@ app.use(express.urlencoded({ extended: false }))
 app.set('db', 'sqlite')
 app.use('/', products)
 app.use('/cart/', cart)
+app.use((_req, res) => {
+  console.log(colors.bgRed.white.bold('The route does not exist!'))
+  res.status(404).send('The route does not exist!')
+})
 // eslint-disable-next-line no-unused-vars
 const server = app.listen(PORT, () => {
   console.log(colors.bgBlue.white.bold(`Server online on port ${PORT}`))

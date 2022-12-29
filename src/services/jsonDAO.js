@@ -40,7 +40,7 @@ class VersionClass {
 }
 class JsonDbManager {
   constructor (file) {
-    this.file = file
+    this.file = './src/databases/' + file
     this.data = []
     this.version = new VersionClass(0, false, 0)
   }
@@ -229,7 +229,6 @@ class JsonDbManager {
 
   async updateById (item, id1) {
     const id = parseInt(id1)
-
     await this.readData()
     const dataIndex = this.data.findIndex((dataItem) => dataItem.id === id)
     if (dataIndex !== -1) {

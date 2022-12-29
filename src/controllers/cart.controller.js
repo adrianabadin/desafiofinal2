@@ -1,15 +1,8 @@
 const colors = require('colors')
 const ItemClass = require('../services/jsonDAO').ItemClass
 const uuid = require('uuid')
-// const Product = require('../services/jsonDAO').JsonDbManager
-// const cartDbManager = new Product('./src/databases/cart')
-// const MongoDAO = require('../services/mongoDbDAO')
-// const model = require('../databases/models/cartModels')
-// const cartDbManager = new MongoDAO(model)
-// const CartDbManager = require('../services/firestoreDAO')
-// const cartDbManager = new CartDbManager('carts')
-const CartDbManager = require('../services/sqlDAO')
-const cartDbManager = new CartDbManager('carts', 'sqlite', 'carts')
+const DbManager = require('../services/dbPicker')
+const cartDbManager = new DbManager('cart').database
 function CartControllers () {
   const createCart = async (_req, res) => {
     try {
@@ -33,13 +26,15 @@ function CartControllers () {
     } catch (e) { res.status(400).send({ err: 'Unable to add item to the cart ', status: 400, ok: false, statusText: 'Error adding item to cart' }) }
   }
   const getCart = async (req, res) => {
-    const id = parseInt(req.params.id)
-    console.log(await cartDbManager.getAll())
-    const data = await cartDbManager.getByID(id)
-    res.status(data.status).send(data)
+    const id = parseInt(req.params.id) || req.params.id
+    try {
+      console.log('getcart', id)
+      const data = await cartDbManager.getById(id)
+      res.status(data.status).send(data)
+    } catch (e) { res.status(400).send({ err: 'Unable to get cart' }) }
   }
   const deleteCart = async (req, res) => {
-    const id = req.params.id
+    const id = parseInt(req.params.id) || req.params.id
     let data
     const doc = await cartDbManager.getById(id)
     if (doc.ok) {

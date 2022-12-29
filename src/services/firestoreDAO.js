@@ -29,6 +29,7 @@ class FirebaseManager {
   async getById (id) {
     const result = await this.db.collection(this.collection).doc(id).get()
     let response
+    console.log(result.exists)
     if (result.exists) {
       response = new DataResponse({ ...result.data(), id: result.id }, true, '', 200, 'Succesfully retrived data')
     } else response = new DataResponse({ ...result.data(), id: result.id }, false, 'Document doesnt exist', 400, 'Document doesnt exist')
