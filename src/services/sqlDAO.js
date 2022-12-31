@@ -1,34 +1,18 @@
-// const Database = require('../config/knex.js')
-
 const colors = require('colors')
-// class Products {
-//   constructor (name, description, code, image, price, stock, timeStamp) {
-//     this.name = name
-//     this.description = description
-//     this.code = code
-//     this.image = image
-//     this.price = price
-//     this.stock = stock
-//     this.timeStamp = timeStamp
-//   }
-// }
+
 class DatabaseHandlder {
   constructor (file, database, table) {
     this.database = new (require('../config/knex.js'))(file, database).database
     this.table = table
     this.products = (table === 'products') ? { name: 'string', description: 'string', code: 'string', image: 'string', price: 'integer', stock: 'integer', timeStamp: 'integer' } : { timeStamp: 'integer', products: 'json' }
-    // new Products('string', 'string', 'string', 'string', 'integer', 'integer', 'integer')
   }
 
   async isTable () {
     const rta = await this.database.schema.hasTable(this.table).then((response) => {
-      console.log(response)
       return response
     }).catch((response) => {
-      console.log(response)
       return response
     })
-    console.log(colors.bgRed.bold.white(rta), 'existe la tabla products?')
     return rta
   }
 
@@ -40,7 +24,6 @@ class DatabaseHandlder {
         table[tableObject[key]](key)
       })
     }).then(res => {
-      console.log(res)
       return { status: 201, ok: true, statusText: 'Table created successfully' }
     }).catch(err => {
       console.log(err)
@@ -52,16 +35,13 @@ class DatabaseHandlder {
     const item = { ...item1, id: undefined }
 
     const condicion = await this.isTable()
-    console.log(colors.bgRed.bold.white(item), condicion)
     if (!condicion) {
-      console.log('creatinG table')
       await this.createTable(this.products)
     }
 
     try {
-      const dato = await this.database(this.table).insert(item).then(res => console.log(res)).catch(err => console.log(err))
+      await this.database(this.table).insert(item).then(res => console.log(res)).catch(err => console.log(err))
 
-      console.log(this.table, dato)
       return {
         data: [item],
         ok: true,
@@ -88,7 +68,6 @@ class DatabaseHandlder {
       await this.createTable(this.products)
     }
     return this.database(this.table).where({ id }).then(response => {
-      console.log(response)
       if (response.length !== 0) {
         return {
           data: JSON.parse(JSON.stringify(response)),
@@ -133,17 +112,27 @@ class DatabaseHandlder {
     })
   }
 
+  isCart (item) {
+    let response = false
+    if (('products' in item) && ('timeStamp' in item)) {
+      response = true
+    }
+    return response
+  }
+
   async updateById (item1, id1) {
     const id = parseInt(id1)
-    const item = { ...item1, id, products: JSON.stringify(item1.products) }
-    const condicion = await this.isTable()
-    console.log(colors.yellow(item), 'ada')
+    const item = (Array.isArray(item1)) ? { ...item1[0], id } : { ...item1, id }
+    if ('products' in item) {
+      item.products = JSON.stringify(item1.products)
+    }
+    const condicion = await this.isTable(this.table)
+    console.log(colors.yellow(item.products), 'ada', colors.green(item1))
     if (!condicion) {
       await this.createTable(this.products)
     }
 
     return await this.database(this.table).where({ id }).update(item).then(res => {
-      console.log(res)
       if (res !== 0) {
         return {
           data: JSON.parse(JSON.stringify(item)),
@@ -154,7 +143,6 @@ class DatabaseHandlder {
         }
       } else throw new Error('Item not updated')
     }).catch(err => {
-      console.error(err)
       return {
         data: [],
         ok: false,
@@ -174,7 +162,6 @@ class DatabaseHandlder {
     }
     return this.database(this.table).where({ id }).delete().then(res => {
       if (JSON.parse(JSON.stringify(res)) === 0) throw new Error('Cannot delete')
-      console.log(res)
       return {
         data: [],
         ok: true,

@@ -18,6 +18,7 @@ function CartControllers () {
       const id = req.params.id
       const transitionObject = await cartDbManager.getById(id)
       const cleanObject = transitionObject.data
+      if (!Array.isArray(cleanObject.products)) cleanObject.products = []
       console.log(transitionObject, id, 'DATA:', data, colors.red(cleanObject))
       cleanObject.products.push(new ItemClass(data.id, data.name, data.description, data.code, data.image, data.price, data.stock))
       console.log(colors.red(cleanObject), 'CleanObj')

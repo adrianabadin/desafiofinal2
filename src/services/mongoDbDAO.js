@@ -1,4 +1,3 @@
-const colors = require('colors')
 require('../config/mongoose')
 
 class DataResponse {
@@ -36,7 +35,6 @@ class DbManager {
 
   async updateById (data, id) {
     const response = await this.getById(id)
-    console.log(colors.bgRed.white(response))
     if (response.ok) {
       return this.model.findByIdAndUpdate(id, data, { new: true })
         .then(response => new DataResponse(response, true, '', 201, 'Information updated'))

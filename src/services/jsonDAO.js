@@ -1,5 +1,3 @@
-// import { Color } from "colors";
-
 const fs = require('fs')
 const TIMEOUT = 3000
 
@@ -51,7 +49,6 @@ class JsonDbManager {
       version = await JSON.parse(
         await fs.promises.readFile(`${this.file}.version`, 'utf-8')
       )
-      console.log(version)
     } else {
       version = new VersionClass(Date.now(), false, 0)
       await fs.promises.writeFile(
@@ -203,7 +200,6 @@ class JsonDbManager {
 
   async deleteById (id1) {
     const id = parseInt(id1)
-    console.log('Deletingid :', id)
     await this.readData()
     const item = this.data.find((dataItem) => dataItem.id === id)
     if (item != null) {
